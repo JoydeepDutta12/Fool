@@ -29,6 +29,7 @@
 </div>
 
 <div class="app intro-waiting" inert aria-hidden="true">
+  <!-- Sidebar (desktop) -->
   <nav class="sidebar">
     <div class="brand">
       <span class="mark">28</span>
@@ -51,15 +52,19 @@
     </div>
   </nav>
 
-  <nav class="mobile-nav" aria-label="Mobile main navigation">
-    <button class="active" data-tab="dashboard" type="button">Dashboard</button>
-    <button data-tab="tasks" type="button">Tasks</button>
-    <button data-tab="calendar" type="button">Cal</button>
-    <button data-tab="syllabus" type="button">Syllabus</button>
-    <button data-tab="pyqs" type="button">PYQs</button>
-    <button data-tab="pdfs" type="button">PDFs</button>
-    <button data-tab="revision" type="button">Revise</button>
-  </nav>
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar">
+    <div class="brand"><span class="mark" style="width:28px;height:28px;font-size:11px;">28</span><h1>Target 28<span class="brand-name" data-student-name></span></h1></div>
+    <select id="mobileNav">
+      <option value="dashboard">Dashboard</option>
+      <option value="tasks">Daily Tasks</option>
+      <option value="calendar">Calendar</option>
+      <option value="syllabus">Syllabus</option>
+      <option value="pyqs">PYQs</option>
+      <option value="pdfs">PDF Hub</option>
+      <option value="revision">Revision</option>
+    </select>
+  </div>
 
   <main class="main">
     <div class="app-tools">
@@ -68,6 +73,7 @@
       <button class="btn ghost small" id="changeNameBtn" type="button">Change name</button>
     </div>
 
+    <!-- DASHBOARD -->
     <section class="section active" id="tab-dashboard">
       <div class="section-head">
         <div>
@@ -112,6 +118,7 @@
       </div>
     </section>
 
+    <!-- DAILY TASKS -->
     <section class="section" id="tab-tasks">
       <div class="section-head">
         <div><p class="eyebrow">Bubble B · Fill it in</p><h2>Daily Tasks</h2></div>
@@ -131,6 +138,7 @@
       </div>
     </section>
 
+    <!-- CALENDAR -->
     <section class="section" id="tab-calendar">
       <div class="section-head">
         <div><p class="eyebrow">Bubble C · Study log</p><h2>Calendar</h2></div>
@@ -154,6 +162,7 @@
       </div>
     </section>
 
+    <!-- SYLLABUS -->
     <section class="section" id="tab-syllabus">
       <div class="section-head">
         <div><p class="eyebrow">Bubble D · Coverage</p><h2>Syllabus</h2></div>
@@ -170,16 +179,17 @@
         </div>
         <div class="progress-track"><div class="progress-fill" id="syllabusProgFill" style="width:0%;background:var(--signal);"></div></div>
         <div id="chapterList"></div>
-        <p class="syllabus-source">Topic outline follows the <a href="https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/10/20261024683680768.pdf" target="_blank" rel="noopener">official JEE syllabus PDF</a>.</p>
+        <p class="syllabus-source">Topic outline follows the <a href="https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/10/20261024683680768.pdf" target="_blank" rel="noopener">NTA JEE Main 2027 syllabus</a>, expanded with <a href="https://www.ncert.nic.in/textbook/pdf/leph1ps.pdf" target="_blank" rel="noopener">NCERT Physics</a>, <a href="https://ncert.nic.in/pdf/syllabus/desm_s_Chemistry.pdf" target="_blank" rel="noopener">NCERT Chemistry</a>, and <a href="https://ncert.nic.in/exemplar-problems.php?ln=hi" target="_blank" rel="noopener">NCERT chapter/exemplar coverage</a>. JEE 2028 may differ.</p>
       </div>
     </section>
 
+    <!-- REVISION -->
     <section class="section" id="tab-revision">
       <div class="section-head">
         <div><p class="eyebrow">Bubble G · Recall practice</p><h2>Revision</h2><p class="sub">Choose a chapter and topic for its ten-card offline review deck.</p></div>
       </div>
       <div class="card revision-controls">
-        <div><label for="revisionSubject">Subject</label><select id="revisionSubject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="maths">Maths</option></select></div>
+        <div><label for="revisionSubject">Subject</label><select id="revisionSubject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="maths">Mathematics</option></select></div>
         <div><label for="revisionChapter">Chapter</label><select id="revisionChapter"></select></div>
         <div><label for="revisionTopic">Topic</label><select id="revisionTopic"></select></div>
       </div>
@@ -191,6 +201,7 @@
       </div>
     </section>
 
+    <!-- PYQs -->
     <section class="section" id="tab-pyqs">
       <div class="section-head">
         <div><p class="eyebrow">Bubble E · Practice log</p><h2>Previous Year Questions</h2></div>
@@ -214,6 +225,7 @@
       </div>
     </section>
 
+    <!-- PDF HUB -->
     <section class="section" id="tab-pdfs">
       <div class="section-head">
         <div><p class="eyebrow">Bubble F · Reference material</p><h2>PDF Hub</h2></div>
@@ -233,9 +245,11 @@
       <div class="pdf-list" id="pdfList"></div>
       <div class="empty" id="pdfEmpty" style="display:none;">No PDFs yet — add your first study material above.</div>
     </section>
+
   </main>
 </div>
 
+<!-- Day detail modal (calendar) -->
 <div class="modal-backdrop" id="dayModalBackdrop">
   <div class="modal">
     <h3 id="dayModalTitle">Day log</h3>
