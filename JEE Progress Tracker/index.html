@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Target 28 — JEE Progress Tracker</title>
+<meta name="theme-color" content="#10141F">
+<meta name="description" content="A JEE 2028 progress tracker — daily tasks, calendar, syllabus, PYQs and a PDF hub.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-stage">
+    <span class="welcome-mark">28</span>
+    <h1 id="welcomeTitle">WELCOME</h1>
+    <form class="welcome-name-form" id="welcomeNameForm" hidden>
+      <label for="welcomeName">What should we call you?</label>
+      <input type="text" id="welcomeName" maxlength="40" autocomplete="given-name" placeholder="Your name" required>
+      <button class="btn" type="submit">Continue</button>
+    </form>
+  </div>
+</div>
+
+<div class="app intro-waiting" inert aria-hidden="true">
+  <!-- Sidebar (desktop) -->
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="mark">28</span>
+      <h1>Target 28<span class="brand-name" data-student-name></span></h1>
+      <p>JEE Aspirant Console</p>
+    </div>
+    <ul class="navlist">
+      <li><button class="active" data-tab="dashboard"><span class="bubble mono">A</span>Dashboard</button></li>
+      <li><button data-tab="tasks"><span class="bubble mono">B</span>Daily Tasks</button></li>
+      <li><button data-tab="calendar"><span class="bubble mono">C</span>Calendar</button></li>
+      <li><button data-tab="syllabus"><span class="bubble mono">D</span>Syllabus</button></li>
+      <li><button data-tab="pyqs"><span class="bubble mono">E</span>PYQs</button></li>
+      <li><button data-tab="pdfs"><span class="bubble mono">F</span>PDF Hub</button></li>
+      <li><button data-tab="revision"><span class="bubble mono">G</span>Revision</button></li>
+    </ul>
+    <div class="sidefoot">
+      <label style="margin-bottom:6px;">Exam date</label>
+      <input type="date" id="examDateInput" class="mono">
+      <button id="exportBtn">Export backup (.json)</button>
+    </div>
+  </nav>
+
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar">
+    <div class="brand"><span class="mark" style="width:28px;height:28px;font-size:11px;">28</span><h1>Target 28<span class="brand-name" data-student-name></span></h1></div>
+    <select id="mobileNav">
+      <option value="dashboard">Dashboard</option>
+      <option value="tasks">Daily Tasks</option>
+      <option value="calendar">Calendar</option>
+      <option value="syllabus">Syllabus</option>
+      <option value="pyqs">PYQs</option>
+      <option value="pdfs">PDF Hub</option>
+      <option value="revision">Revision</option>
+    </select>
+  </div>
+
+  <main class="main">
+    <div class="app-tools">
+      <time id="appClock" class="app-clock" aria-label="Current local time">--:--:--</time>
+      <label class="voice-picker">Greeting voice<select id="voiceSelect" aria-label="Greeting voice"><option value="">Loading voices…</option></select></label>
+      <button class="btn ghost small" id="changeNameBtn" type="button">Change name</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="section active" id="tab-dashboard">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Mission Control</p>
+          <h2 id="dashboardGreeting" aria-live="polite">Good day</h2>
+          <p class="sub" id="dashboardMessage">What are we doing today?</p>
+        </div>
+      </div>
+
+      <div class="countdown-card">
+        <div class="countdown-center">
+          <div class="countdown-num mono" id="daysLeft">—</div>
+          <div class="countdown-label">Days to JEE 2028</div>
+        </div>
+        <div class="countdown-date">
+          Exam date<br><span class="mono" id="examDateDisplay" style="font-size:15px;"></span>
+        </div>
+      </div>
+
+      <div class="grid grid-4" style="margin-top:18px;">
+        <div class="stat"><div class="num" id="stTasksToday">0/0</div><div class="lbl">Today's tasks</div></div>
+        <div class="stat physics"><div class="num" id="stPhysics">0%</div><div class="lbl">Physics syllabus</div></div>
+        <div class="stat chem"><div class="num" id="stChem">0%</div><div class="lbl">Chemistry syllabus</div></div>
+        <div class="stat maths"><div class="num" id="stMaths">0%</div><div class="lbl">Maths syllabus</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:18px;">
+        <div class="card">
+          <h3 style="margin:0 0 4px;font-size:15px;">Today's tasks</h3>
+          <p class="sub" style="color:var(--text-muted);font-size:12.5px;margin:0;">Quick glance — manage in Daily Tasks</p>
+          <div class="dash-tasks-preview" id="dashTaskPreview"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 4px;font-size:15px;">This week</h3>
+          <p class="sub" style="color:var(--text-muted);font-size:12.5px;margin:0 0 12px;">Study log · last 7 days</p>
+          <div id="weekStrip" style="display:flex;gap:6px;justify-content:space-between;"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:12.5px;color:var(--text-muted);">
+            <span>PYQs solved (total): <b class="mono" id="stPyqTotal" style="color:var(--text);">0</b></span>
+            <span>PDFs saved: <b class="mono" id="stPdfTotal" style="color:var(--text);">0</b></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAILY TASKS -->
+    <section class="section" id="tab-tasks">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble B · Fill it in</p><h2>Daily Tasks</h2></div>
+      </div>
+      <div class="date-row">
+        <button class="btn ghost small" id="taskPrevDay">← Prev</button>
+        <input type="date" id="taskDateInput" class="mono" style="width:170px;">
+        <button class="btn ghost small" id="taskNextDay">Next →</button>
+        <button class="btn ghost small" id="taskTodayBtn">Today</button>
+      </div>
+      <div class="card">
+        <div class="task-add">
+          <input type="text" id="newTaskInput" placeholder="e.g. Solve 25 PYQs — Rotational Motion">
+          <button class="btn" id="addTaskBtn">Add</button>
+        </div>
+        <div class="task-list" id="taskList"></div>
+      </div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="section" id="tab-calendar">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble C · Study log</p><h2>Calendar</h2></div>
+      </div>
+      <div class="card">
+        <div class="cal-head">
+          <h3 class="mono" id="calMonthLabel" style="margin:0;font-size:16px;"></h3>
+          <div class="navbtns">
+            <button class="arrow" id="calPrev">‹</button>
+            <button class="arrow" id="calNext">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="calDow"></div>
+        <div class="cal-grid" id="calGrid" style="margin-top:6px;"></div>
+        <div class="cal-legend">
+          <span><span class="dot" style="background:var(--grid-line);"></span>No log</span>
+          <span><span class="dot" style="background:var(--amber);"></span>Light day (&lt;3h)</span>
+          <span><span class="dot" style="background:var(--correct);"></span>Solid day (3–6h)</span>
+          <span><span class="dot" style="background:var(--signal);"></span>Grind day (6h+)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYLLABUS -->
+    <section class="section" id="tab-syllabus">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble D · Coverage</p><h2>Syllabus</h2></div>
+      </div>
+      <div class="subject-tabs">
+        <button class="active" data-subj="physics">Physics</button>
+        <button data-subj="chemistry">Chemistry</button>
+        <button data-subj="maths">Mathematics</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--text-muted);" id="syllabusProgLabel">0 / 0 chapters complete</span>
+          <span class="mono" id="syllabusProgPct" style="font-weight:700;">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="syllabusProgFill" style="width:0%;background:var(--signal);"></div></div>
+        <div id="chapterList"></div>
+        <p class="syllabus-source">Topic outline follows the <a href="https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/10/20261024683680768.pdf" target="_blank" rel="noopener">NTA JEE Main 2027 syllabus</a>, expanded with <a href="https://www.ncert.nic.in/textbook/pdf/leph1ps.pdf" target="_blank" rel="noopener">NCERT Physics</a>, <a href="https://ncert.nic.in/pdf/syllabus/desm_s_Chemistry.pdf" target="_blank" rel="noopener">NCERT Chemistry</a>, and <a href="https://ncert.nic.in/exemplar-problems.php?ln=hi" target="_blank" rel="noopener">NCERT chapter/exemplar coverage</a>. JEE 2028 may differ.</p>
+      </div>
+    </section>
+
+    <!-- REVISION -->
+    <section class="section" id="tab-revision">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble G · Recall practice</p><h2>Revision</h2><p class="sub">Choose a chapter and topic for its ten-card offline review deck.</p></div>
+      </div>
+      <div class="card revision-controls">
+        <div><label for="revisionSubject">Subject</label><select id="revisionSubject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="maths">Mathematics</option></select></div>
+        <div><label for="revisionChapter">Chapter</label><select id="revisionChapter"></select></div>
+        <div><label for="revisionTopic">Topic</label><select id="revisionTopic"></select></div>
+      </div>
+      <div class="card flashcard" id="flashcard" aria-live="polite">
+        <p class="eyebrow" id="flashcardCount">CARD 1</p>
+        <h3 id="flashcardQuestion">Choose a topic to begin.</h3>
+        <div class="flashcard-answer" id="flashcardAnswer" hidden></div>
+        <div class="flashcard-actions"><button class="btn ghost" id="previousCardBtn" type="button">Previous</button><button class="btn ghost" id="showAnswerBtn" type="button">Show answer</button><button class="btn" id="nextCardBtn" type="button">Next card</button></div>
+      </div>
+    </section>
+
+    <!-- PYQs -->
+    <section class="section" id="tab-pyqs">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble E · Practice log</p><h2>Previous Year Questions</h2></div>
+      </div>
+      <div class="card pyq-log-card" style="margin-bottom:18px;">
+        <div class="pyq-form">
+          <div><label>Year</label><input type="number" id="pyqYear" placeholder="2023" min="2002" max="2028"></div>
+          <div><label>Subject</label>
+            <select id="pyqSubject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="maths">Maths</option></select>
+          </div>
+          <div><label>Chapter / topic</label><input type="text" id="pyqChapter" placeholder="Optional"></div>
+          <div><label>Attempted</label><input type="number" id="pyqAttempted" min="0" placeholder="0"></div>
+          <div><label>Correct</label><input type="number" id="pyqCorrect" min="0" placeholder="0"></div>
+          <button class="btn" id="addPyqBtn">Log</button>
+        </div>
+        <table class="pyq-table">
+          <thead><tr><th>Date</th><th>Year</th><th>Subject</th><th>Chapter</th><th>Attempted</th><th>Correct</th><th>Accuracy</th><th></th></tr></thead>
+          <tbody id="pyqTableBody"></tbody>
+        </table>
+        <div class="empty" id="pyqEmpty" style="display:none;">No PYQ sessions logged yet — add your first one above.</div>
+      </div>
+    </section>
+
+    <!-- PDF HUB -->
+    <section class="section" id="tab-pdfs">
+      <div class="section-head">
+        <div><p class="eyebrow">Bubble F · Reference material</p><h2>PDF Hub</h2></div>
+      </div>
+      <div class="pdf-upload">
+        Store notes, PYQ papers, and reference PDFs — saved locally in this browser, works offline.
+        <br><label for="pdfFileInput">+ Add PDF</label>
+        <input type="file" id="pdfFileInput" accept="application/pdf" multiple>
+      </div>
+      <div class="pdf-filter" id="pdfFilter">
+        <button class="active" data-f="all">All</button>
+        <button data-f="physics">Physics</button>
+        <button data-f="chemistry">Chemistry</button>
+        <button data-f="maths">Maths</button>
+        <button data-f="general">General</button>
+      </div>
+      <div class="pdf-list" id="pdfList"></div>
+      <div class="empty" id="pdfEmpty" style="display:none;">No PDFs yet — add your first study material above.</div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Day detail modal (calendar) -->
+<div class="modal-backdrop" id="dayModalBackdrop">
+  <div class="modal">
+    <h3 id="dayModalTitle">Day log</h3>
+    <div class="field">
+      <label>Hours studied</label>
+      <input type="number" id="dayHours" min="0" max="24" step="0.5" placeholder="e.g. 4.5">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="dayNotes" rows="3" placeholder="What did you cover today?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="dayModalCancel">Close</button>
+      <button class="btn" id="dayModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<dialog class="profile-dialog" id="profileDialog">
+  <form id="profileForm" method="dialog">
+    <h3>Change your name</h3>
+    <label for="profileName">Name</label>
+    <input type="text" id="profileName" maxlength="40" required>
+    <div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn" id="saveNameBtn" value="save">Save name</button></div>
+  </form>
+</dialog>
+
+<script src="syllabus-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
